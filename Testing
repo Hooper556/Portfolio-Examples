@@ -1,0 +1,26 @@
+describe "check_weekly_games/1" do
+    test "successfully checks weekly games" do
+      user = TriviaFixtures.insert(:user, id: 76682)
+      TriviaFixtures.insert(:collection, id: 3, user: user)
+
+      games_parsed_correctly = games()
+      api_check_week_one = get_weekly_games_by_week_number(1)
+
+      assert api_check_week_one == games_parsed_correctly
+
+      api_check_daily_games = get_daily_game_by_date(20220911)
+
+      preloaded_api_response_week_one = load_map("weekly_games_response")
+      Mimic.expect(Client, :get, 1, fn _ -> {:ok, preloaded_api_response_week_one} end)
+    end
+  end
+
+  defp get_weekly_games_by_week_number(week) do
+    SportsFeed.get_weekly_games(week) |> Tuple.to_list() |> Enum.at(1) |> IO.inspect()
+  end
+
+  defp get_daily_game_by_date(date) do
+    SportsFeed.get_daily_games(date)
+    |> Tuple.to_list()
+    |> Enum.at(1)
+  end
