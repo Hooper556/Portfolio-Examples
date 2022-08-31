@@ -1,0 +1,47 @@
+export default function App() {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  function onAuthStateChanged(user) {
+    if (initializing) setInitializing(false);
+    setUser(firebase.auth().currentUser);
+  }
+
+  useEffect(() => {
+    const subscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+    
+    return () => {
+      subscriber;
+    };
+    
+  }, []);
+
+  if (initializing) return null;
+
+ 
+
+  return (
+    <NavigationContainer style={styles.container}>
+      {user ? (
+        <Stack.Navigator headerMode={"none"} initialRouteName="Main">
+          <Stack.Screen name="Main" component={MainScreen} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator headerMode={"none"} initialRouteName="Login">
+          <Stack.Screen name="Loading" component={LoadingScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
