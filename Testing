@@ -1,7 +1,7 @@
 describe "check_weekly_games/1" do
     test "successfully checks weekly games" do
-      user = TriviaFixtures.insert(:user, id: 76682)
-      TriviaFixtures.insert(:collection, id: 3, user: user)
+      user = TriviaFixtures.insert(:user, id: ###)
+      TriviaFixtures.insert(:collection, id: #, user: user)
 
       games_parsed_correctly = games()
       api_check_week_one = get_weekly_games_by_week_number(1)
