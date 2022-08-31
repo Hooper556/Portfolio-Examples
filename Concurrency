@@ -1,0 +1,45 @@
+const addToStorage = async (
+    taskList,
+    userEmail,
+    profilePic,
+    username,
+    description,
+    name
+  ) => {
+    const response = await fetch(image);
+    const blob = await response.blob();
+    const randPostKey = (Math.random() * 1000 + 1).toString();
+    const refChild =
+      "Images/post-" + userEmail + "-" + description + randPostKey;
+
+    var ref = firebase.storage().ref().child(refChild);
+
+    await ref
+      .put(blob)
+      .then((snapshot) => {
+        return snapshot.ref.getDownloadURL();
+      })
+      .then((downloadURL) => {
+        console.log(
+          `Successfully uploaded file and got download link - ${downloadURL}`
+        );
+        addPostToPostList(
+          downloadURL,
+          taskList,
+          userEmail,
+          profilePic,
+          username,
+          description,
+          refChild,
+          name
+        );
+
+        return downloadURL;
+      })
+      .catch((e) => {
+        setError(true);
+        // log error
+        Alert.alert("Something went wrong posting, try again");
+        console.log(e);
+      });
+  };
