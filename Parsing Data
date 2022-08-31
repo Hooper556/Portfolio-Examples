@@ -1,0 +1,57 @@
+def parse_game(%{"schedule" => schedule, "score" => score}) do
+    {:ok, start_time, _offset} = DateTime.from_iso8601(schedule["startTime"])
+
+    status = parse_game_status(schedule["playedStatus"])
+
+    winner =
+      parse_game_winner(
+        score["awayScoreTotal"],
+        score["homeScoreTotal"],
+        schedule["awayTeam"]["abbreviation"],
+        schedule["homeTeam"]["abbreviation"]
+      )
+
+    %{
+      home_team: schedule["homeTeam"]["abbreviation"],
+      away_team: schedule["awayTeam"]["abbreviation"],
+      start_time: start_time,
+      away_score_total: score["awayScoreTotal"],
+      home_score_total: score["homeScoreTotal"],
+      played_status: schedule["playedStatus"],
+      winner: winner,
+      game_completed: status
+    }
+  end
+
+  defp parse_game_status(played_status) do
+    case played_status do
+      "COMPLETED" ->
+        true
+
+      "UNPLAYED" ->
+        false
+
+      "LIVE" ->
+        false
+
+      "COMPLETED_PENDING_REVIEW" ->
+        true
+
+      _ ->
+        :ok
+    end
+  end
+
+  defp parse_game_winner(
+         away_score_total,
+         home_score_total,
+         away_team,
+         home_team
+       ) do
+    cond do
+      away_score_total > home_score_total -> away_team
+      home_score_total > away_score_total -> home_team
+      home_score_total == away_score_total -> "Tie"
+      true -> nil
+    end
+  end
